@@ -1,0 +1,5 @@
+---
+- name: Restart couchdb
+  service:
+    name: couchdb 
+    state: restarted
