@@ -1,10 +1,16 @@
 # CouchDB Ansible Role
 
-Installs CouchDB on CentOS 7. Tested with Ansible 1.8.2
+Installs CouchDB on CentOS 7 or Fedora 22. Tested with Ansible 1.8.2
+
+Largely a refactoring of the previous CouchDB role to use ansible-facts and the install/configure/deploy paradigm.
 
 ## Requirements
 
-The EPEL repository needs to be enabled.
+The EPEL repository needs to be enabled on CentOS7.
+
+## Dependencies
+
+The ansible-facts role (https://github.com/avtar/ansible-facts) is required.
 
 ## Role Variables
 
@@ -17,7 +23,7 @@ Whether an administrator account should be created. In order to enable this the 
 
 CouchDB administrator user name and password.
 
-    couchdb_username: 'couchdb' 
+    couchdb_username: 'couchdb'
     couchdb_groupname: 'couchdb'
 
 CouchDB system accounts that are used by the couchdb daemon and own all required directories.

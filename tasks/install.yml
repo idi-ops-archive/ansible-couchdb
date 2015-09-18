@@ -1,0 +1,18 @@
+# Workaround for https://github.com/ansible/ansible-modules-extras/issues/471
+- name: Install Yum Utilities
+  shell: dnf -y install yum-utils
+  args:
+    creates: /usr/bin/repoquery
+  when: is_fedora
+
+- name: Install CouchDB on Fedora
+  dnf:
+    name: couchdb
+    state: present
+  when: is_fedora
+
+- name: Install CouchDB on Centos
+  yum:
+    name: couchdb
+    state: present
+  when: is_centos

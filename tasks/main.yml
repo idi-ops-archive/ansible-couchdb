@@ -1,33 +1,13 @@
 ---
-- name: Ensure the couchdb group exists
-  group:
-    name: "{{ couchdb_groupname }}"
-    state: present
 
-- name: Ensure the couchdb user exists
-  user:
-    name: "{{ couchdb_username }}"
-    comment: "CouchDB User"
-    group: couchdb
-    home: /var/lib/couchdb
-    system: yes
+- include: install.yml
+  tags:
+    - install
 
-- name: Install CouchDB
-  yum:
-    name: couchdb
-    state: installed
+- include: configure.yml
+  tags:
+    - configure
 
-- name: Ensure /etc/couchdb/local.ini exists
-  template:
-    src: local.ini.j2
-    dest: /etc/couchdb/local.ini
-    mode: 0640
-    owner: "{{ couchdb_username }}"
-    group: "{{ couchdb_groupname }}"
-  notify: Restart couchdb
-
-- name: Start and enable CouchDB
-  service:
-    name: couchdb
-    state: started
-    enabled: yes
+- include: deploy.yml
+  tags:
+    - deploy

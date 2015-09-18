@@ -1,0 +1,12 @@
+- name: Ensure the couchdb group exists
+  group:
+    name: "{{ couchdb_groupname }}"
+    state: present
+
+- name: Ensure the couchdb user exists
+  user:
+    name: "{{ couchdb_username }}"
+    comment: "CouchDB User"
+    group: couchdb
+    home: /var/lib/couchdb
+    system: yes

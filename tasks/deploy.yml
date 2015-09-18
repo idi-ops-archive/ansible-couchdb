@@ -1,0 +1,14 @@
+- name: Ensure /etc/couchdb/local.ini exists
+  template:
+    src: local.ini.j2
+    dest: /etc/couchdb/local.ini
+    mode: 0640
+    owner: "{{ couchdb_username }}"
+    group: "{{ couchdb_groupname }}"
+  notify: Restart couchdb
+
+- name: Start and enable CouchDB
+  service:
+    name: couchdb
+    state: started
+    enabled: yes
