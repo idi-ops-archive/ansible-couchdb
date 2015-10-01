@@ -15,6 +15,12 @@ couchdb_port: '5984'
 # Used in templates/local.ini.j2
 couchdb_host_address: '0.0.0.0'
 
+# List of databases to create
+couchdb_databases: []
+
+# Delete existing databases
+couchdb_delete_existing_databases: false
+
 # Used in templates/local.ini.j2
 couchdb_enable_automatic_compaction: true
 

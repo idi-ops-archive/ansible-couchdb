@@ -36,6 +36,14 @@ Default port used by the daemon.
 
 The IP address that the service should listen on.
 
+    couchdb_databases: []
+
+List of databases to create.
+
+    couchdb_delete_existing_databases: false
+
+Whether databases defined using ``couchdb_databases`` should be deleted if they exist. This is most likey only useful in development environments where you may want to remove existing data and start from scratch.
+
     couchdb_enable_automatic_compaction: true
 
 Whether the database(s) should be compacted.

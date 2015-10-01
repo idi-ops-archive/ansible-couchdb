@@ -1,3 +1,4 @@
+---
 - name: Ensure /etc/couchdb/local.ini exists
   template:
     src: local.ini.j2
@@ -12,3 +13,20 @@
     name: couchdb
     state: started
     enabled: yes
+
+- name: Delete existing databases if asked to do so
+  uri:
+    url: "http://{{ couchdb_host_address }}:{{ couchdb_port }}/{{ item }}"
+    method: DELETE
+  with_items: "{{ couchdb_databases }}"
+  ignore_errors: yes
+  when: (couchdb_delete_existing_databases) and (couchdb_databases)
+
+- name: Create databases if asked to do so
+  uri:
+    url: "http://{{ couchdb_host_address }}:{{ couchdb_port }}/{{ item }}"
+    method: PUT
+    status_code: 200, 201
+  with_items: "{{ couchdb_databases }}"
+  when: couchdb_databases
+

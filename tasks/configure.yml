@@ -1,3 +1,4 @@
+---
 - name: Ensure the couchdb group exists
   group:
     name: "{{ couchdb_groupname }}"
