@@ -38,7 +38,7 @@
 # Setting the 'force_basic_auth' parameter is needed for non-GET requests.
  name: Delete test database if it already exists
   uri:
-    url: "{{ couchdb_url }}/test-ansible-db" 
+    url: "{{ couchdb_url }}/ansible-test-db" 
     method: DELETE
     status_code: 200
     user: "{{ couchdb_admin_username | default(omit) }}"
@@ -48,7 +48,7 @@
 
 - name: Create test database
   uri:
-    url: "{{ couchdb_url }}/test-ansible-db" 
+    url: "{{ couchdb_url }}/ansible-test-db" 
     method: PUT
     status_code: 201
     user: "{{ couchdb_admin_username | default(omit) }}"
@@ -57,13 +57,13 @@
 
 - name: Ensure test database exists
   uri:
-    url: "{{ couchdb_url }}/test-ansible-db"
+    url: "{{ couchdb_url }}/ansible-test-db"
     method: GET
     status_code: 200
 
 - name: Delete test database
   uri:
-    url: "{{ couchdb_url }}/test-ansible-db" 
+    url: "{{ couchdb_url }}/ansible-test-db" 
     method: DELETE
     status_code: 200
     user: "{{ couchdb_admin_username | default(omit) }}"
