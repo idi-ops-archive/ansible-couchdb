@@ -12,7 +12,7 @@ level = warning
 verify_ssl_certificates = false
 ssl_certificate_max_depth = 1
 
-{% if couchdb_create_admin_user %}
+{% if couchdb_create_admin_user == 'true'  %}
 [admins]
 {{ couchdb_admin_username }} = {{ couchdb_admin_password }}
 {% endif %}

@@ -1,0 +1,71 @@
+---
+- name: Ensure Supervisord will start the application as a background process in a Docker container
+  lineinfile:
+    dest: /etc/supervisord.conf
+    regexp: ^nodaemon=true
+    state: absent
+  when: is_docker
+
+- name: Start Supervisord and application in a Docker container
+  shell: supervisord -c /etc/supervisord.conf
+  when: is_docker
+
+- name: Ensure CouchDB is listening for connections before proceeding with tests
+  wait_for:
+    host: "{{ couchdb_host_address }}"
+    port: "{{ couchdb_port }}"
+    state: started
+    timeout: 300
+
+- name: Create couchdb_url fact if authentication is being used
+  set_fact:
+    couchdb_url: "http://{{ couchdb_host_address }}:{{ couchdb_port }}"
+
+- name: Test CouchDB endpoint and check the result for the presence of a requested string
+  uri:
+    url: "{{ couchdb_url }}/"
+    status_code: "{{ couchdb_test_http_status_code }}"
+    follow_redirects: all
+    return_content: yes
+    timeout: 60
+  register: webpage
+
+- name: Fail if requested string is not found
+  fail:
+    msg: Application is not configured properly
+  when: "'{{ couchdb_test_string }}' not in webpage.content"
+
+# Setting the 'force_basic_auth' parameter is needed for non-GET requests.
+ name: Delete test database if it already exists
+  uri:
+    url: "{{ couchdb_url }}/test-ansible-db" 
+    method: DELETE
+    status_code: 200
+    user: "{{ couchdb_admin_username | default(omit) }}"
+    password: "{{ couchdb_admin_password | default(omit) }}"
+    force_basic_auth: "{{ 'yes' if couchdb_create_admin_user == 'true' else 'no' }}"
+  ignore_errors: yes
+
+- name: Create test database
+  uri:
+    url: "{{ couchdb_url }}/test-ansible-db" 
+    method: PUT
+    status_code: 201
+    user: "{{ couchdb_admin_username | default(omit) }}"
+    password: "{{ couchdb_admin_password | default(omit) }}"
+    force_basic_auth: "{{ 'yes' if couchdb_create_admin_user == 'true' else 'no' }}"
+
+- name: Ensure test database exists
+  uri:
+    url: "{{ couchdb_url }}/test-ansible-db"
+    method: GET
+    status_code: 200
+
+- name: Delete test database
+  uri:
+    url: "{{ couchdb_url }}/test-ansible-db" 
+    method: DELETE
+    status_code: 200
+    user: "{{ couchdb_admin_username | default(omit) }}"
+    password: "{{ couchdb_admin_password | default(omit) }}"
+    force_basic_auth: "{{ 'yes' if couchdb_create_admin_user == 'true' else 'no' }}"

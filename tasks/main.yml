@@ -1,5 +1,4 @@
 ---
-
 - include: install.yml
   tags:
     - install
@@ -11,3 +10,12 @@
 - include: deploy.yml
   tags:
     - deploy
+
+- include: test.yml
+  when: >
+    (couchdb_host_address) and
+    (couchdb_port) and
+    (couchdb_test_http_status_code) and
+    (couchdb_test_string)
+  tags:
+    - test
