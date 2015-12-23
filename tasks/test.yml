@@ -36,7 +36,7 @@
   when: "'{{ couchdb_test_string }}' not in webpage.content"
 
 # Setting the 'force_basic_auth' parameter is needed for non-GET requests.
- name: Delete test database if it already exists
+- name: Delete test database if it already exists
   uri:
     url: "{{ couchdb_url }}/ansible-test-db" 
     method: DELETE
