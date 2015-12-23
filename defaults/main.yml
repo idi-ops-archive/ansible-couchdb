@@ -41,3 +41,7 @@ couchdb_min_file_size: '131072'
 # HH:MM - HH:MM (HH in [0..23], MM in [0..59])
 couchdb_compaction_start_time: '23:00'
 couchdb_compaction_end_time: '04:00'
+
+couchdb_test_http_status_code: '200'
+
+couchdb_test_string: 'Welcome'

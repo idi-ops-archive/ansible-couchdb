@@ -1,16 +1,12 @@
 # CouchDB Ansible Role
 
-Installs CouchDB on CentOS 7 or Fedora 22. Tested with Ansible 1.8.2
-
-Largely a refactoring of the previous CouchDB role to use ansible-facts and the install/configure/deploy paradigm.
+Installs CouchDB on CentOS 7 or Fedora 22.
 
 ## Requirements
 
-The EPEL repository needs to be enabled on CentOS7.
+The following roles are required:
 
-## Dependencies
-
-The ansible-facts role (https://github.com/avtar/ansible-facts) is required.
+* [facts](https://github.com/idi-ops/ansible-facts)
 
 ## Role Variables
 
@@ -62,3 +58,54 @@ If a database or view index file is smaller then this value (in bytes), compacti
 The period within which database compaction is allowed. The value for these parameters must obey the format:
 
 HH:MM - HH:MM (HH in [0..23], MM in [0..59])
+
+couchdb_test_http_status_code: '200'
+
+The status code expected from making a request to CouchDB.
+
+couchdb_test_string: 'Welcome'
+
+A string to search for in the response body returned by the test request. This, along with ``couchdb_test_http_status_code``, are only used by the ``test`` target and playbook.
+
+## Example
+
+Create a ``vars.yml`` file with the following contents:
+
+```
+---
+couchdb_create_admin_user: true
+
+couchdb_admin_username: "{{ lookup('env', 'COUCHDB_ADMIN_USERNAME') | default('', true) }}"
+
+couchdb_admin_password: "{{ lookup('env', 'COUCHDB_ADMIN_PASSWORD') | default('', true) }}"
+
+couchdb_databases:
+  - user
+
+couchdb_delete_existing_databases: false
+```
+
+An example playbook that would use ``vars.yml`` above:
+
+```
+---
+- hosts: localhost
+  user: root
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - facts
+    - couchdb
+```
+
+The playbook can then be used like so:
+
+```
+COUCHDB_ADMIN_USERNAME=awesome-name \
+COUCHDB_ADMIN_PASSWORD=awesome-password \
+sudo -E ansible-playbook couchdb-playbook.yml --tags="install,configure,deploy"
+
+sudo ansible-playbook couchdb-playbook.yml --tags="test"
+```
