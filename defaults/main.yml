@@ -15,10 +15,10 @@ couchdb_port: '5984'
 # Used in templates/local.ini.j2
 couchdb_host_address: '0.0.0.0'
 
-# List of databases to create
+# List of databases to create, can't be used with Docker containers
 couchdb_databases: []
 
-# Delete existing databases
+# Delete existing databases, can't be used with Docker containers
 couchdb_delete_existing_databases: false
 
 # Used in templates/local.ini.j2
@@ -42,6 +42,10 @@ couchdb_min_file_size: '131072'
 couchdb_compaction_start_time: '23:00'
 couchdb_compaction_end_time: '04:00'
 
+# The status code expected from making a request to CouchDB.
 couchdb_test_http_status_code: '200'
 
+# A string to search for in the response body returned by the test request. This,
+# along with ``couchdb_test_http_status_code``, are only used by the ``test``
+# target and playbook.
 couchdb_test_string: 'Welcome'

@@ -8,25 +8,46 @@
     group: "{{ couchdb_groupname }}"
   notify: Restart couchdb
 
-- name: Start and enable CouchDB
+- name: Ensure systemd unit is enabled and started
   service:
     name: couchdb
     state: started
     enabled: yes
+  when: not is_docker
 
+- name: Create Supervisor config for Docker containers
+  template:
+    src: supervisor_couchdb.ini.j2
+    dest: /etc/supervisord.d/couchdb.ini
+    mode: 0644
+    owner: root
+    group: root
+  when: is_docker
+
+  # In a Docker environment the CouchDB service doesn't get started until Supervisor itself is
+  # started later in the deployment process. The following two plays cannot be used in containers
+  # because CouchDB won't have access to credentials in /etc/couchdb/local.ini until the service
+  # is running.  
 - name: Delete existing databases if asked to do so
   uri:
     url: "http://{{ couchdb_host_address }}:{{ couchdb_port }}/{{ item }}"
     method: DELETE
+    status_code: 200
+    user: "{{ couchdb_admin_username | default(omit) }}"
+    password: "{{ couchdb_admin_password | default(omit) }}"
+    force_basic_auth: "{{ 'yes' if couchdb_create_admin_user == 'true' else 'no' }}"
   with_items: "{{ couchdb_databases }}"
   ignore_errors: yes
-  when: (couchdb_delete_existing_databases) and (couchdb_databases)
-
+  when: (couchdb_delete_existing_databases) and (couchdb_databases) and (not is_docker)
+  
 - name: Create databases if asked to do so
   uri:
     url: "http://{{ couchdb_host_address }}:{{ couchdb_port }}/{{ item }}"
     method: PUT
     status_code: 200, 201
+    user: "{{ couchdb_admin_username | default(omit) }}"
+    password: "{{ couchdb_admin_password | default(omit) }}"
+    force_basic_auth: "{{ 'yes' if couchdb_create_admin_user == 'true' else 'no' }}"
   with_items: "{{ couchdb_databases }}"
-  when: couchdb_databases
+  when: (couchdb_databases) and (not is_docker)
 
