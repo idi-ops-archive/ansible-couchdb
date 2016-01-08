@@ -3,3 +3,4 @@
   service:
     name: couchdb 
     state: restarted
+  when: not is_docker
